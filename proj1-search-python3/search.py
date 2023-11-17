@@ -122,7 +122,6 @@ def depthFirstSearch(problem):
                 frontier.push(child)
     return actions
     
-
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
 
@@ -145,8 +144,25 @@ def breadthFirstSearch(problem):
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    Node = problem.getStartState()
+
+    if problem.isGoalState(Node):
+        return []
+    
+    vNodes = []
+    pQueue = util.PriorityQueue()
+    pQueue.push((Node, [], 0), 0)
+
+    while not pQueue.isEmpty():
+        cNode, actions, oldCost =  pQueue.pop()
+        if cNode not in vNodes:
+            vNodes.append(cNode)
+            if problem.isGoalState(cNode):
+                return actions
+            for nNode, action, cost in problem.getSuccessors(cNode):
+                nAction = actions + [action]
+                priority = oldCost + cost
+                pQueue.push((nNode, nAction, priority), priority)
 
 def nullHeuristic(state, problem=None):
     """
@@ -165,21 +181,21 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     if problem.isGoalState(firstNode):
         return []
 
-    visitedNodes = []
+    vNodes = []
     pQueue = util.ProrityQueue()
     pQueue.push((firstNode, [], 0), 0)
 
     while not pQueue.isEmpty():
-        currentNode, actions, oldCost = pQueue.pop()
-        if currentNode not in visitedNodes:
-            visitedNodes.append(currentNode)
-            if problem.isGoalState(currentNode):
+        cNode, actions, oldCost = pQueue.pop()
+        if cNode not in vNodes:
+            vNodes.append(cNode)
+            if problem.isGoalState(cNode):
                 return actions
-            for nextNode, action, cost in problem.getSuccessors(currentNode):
-                nextAction = actions + [action]
+            for nNode, action, cost in problem.getSuccessors(cNode):
+                nAction = actions + [action]
                 newCostToNode = oldCost + cost
-                heuristicCost = newCostToNode + heuristic(nextNode, problem)
-                pQueue.push((nextNode, nextAction, newCostToNode), heuristicCost)
+                heuristicCost = newCostToNode + heuristic(nNode, problem)
+                pQueue.push((nNode, nAction, newCostToNode), heuristicCost)
 
 # Abbreviations
 bfs = breadthFirstSearch
