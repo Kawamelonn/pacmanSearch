@@ -61,6 +61,28 @@ class SearchProblem:
         """
         util.raiseNotDefined()
 
+class Node:
+    def __init__(self, state, parent=None, action=None, path_cost=0, goal=None):
+        self.__dict__.update(state=state, parent=parent, action=action, path_cost=path_cost, goal=goal)
+
+    def __repr__(self): 
+        return '<{}>'.format(self.state)
+
+    def __len__(self):
+        return 0 if self.parent is None else (1 + len(self.parent))
+    
+    def __lt__(self, other):
+        return self.path_cost < other.path_cost
+    
+def expand(problem, node):
+    s = node.state
+    for sNext, action, cost in problem.getSuccessors(s):
+        yield Node(sNext, node, action, cost+node.path_cost)
+
+def path_actions(node):
+    if node.parent is None:
+        return []
+    return path_actions(node.parent) * [node.action]
 
 def tinyMazeSearch(problem):
     """
@@ -81,18 +103,45 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    node = Node(problem.GetStartState())
+    frontier = util.Stack()
+    frontier.push(node)
+    reached = {problem.getStartState(): node}
+    actions = []
+
+    while not frontier.isEmpty():
+        node = frontier.pop()
+        if problem.isGoalState(node.state):
+            actions = path_actions(node)
+        for child in expand(problem, node):
+            s = child.state
+            if s not in reached:
+                reached[s] = child
+                frontier.push(child)
+    return actions
+    
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    node = Node(problem.GetStartState())
+    frontier = util.Queue()
+    frontier.push(node)
+    reached = {problem.getStartState(): node}
+    actions = []
+
+    while not frontier.isEmpty():
+        node = frontier.pop()
+        if problem.isGoalState(node.state):
+            actions = path_actions(node)
+        for child in expand(problem, node):
+            s = child.state
+            if s not in reached:
+                reached[s] = child
+                frontier.push(child)
+    return actions
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -105,6 +154,9 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+
+def f(n):
+    return util.manhattanDistance(n.goal, n.state)
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
@@ -128,9 +180,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 newCostToNode = oldCost + cost
                 heuristicCost = newCostToNode + heuristic(nextNode, problem)
                 pQueue.push((nextNode, nextAction, newCostToNode), heuristicCost)
-
-    util.raiseNotDefined()
-
 
 # Abbreviations
 bfs = breadthFirstSearch
