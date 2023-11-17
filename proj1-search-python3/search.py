@@ -103,12 +103,7 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
     startingNode = problem.getStartState()
     if problem.isGoalState(startingNode):
         return []
@@ -129,7 +124,6 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
     startingNode = problem.getStartState()
     if problem.isGoalState(startingNode):
         return []
@@ -147,8 +141,6 @@ def breadthFirstSearch(problem):
             for nextNode, action, cost in problem.getSuccessors(currentNode):
                 nextAction = actions + [action]
                 queue.push((nextNode, nextAction))
-
-    util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
@@ -190,7 +182,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         return []
 
     vNodes = []
-    pQueue = util.ProrityQueue()
+    pQueue = util.PriorityQueue()
     pQueue.push((firstNode, [], 0), 0)
 
     while not pQueue.isEmpty():
