@@ -103,44 +103,52 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
+
+    print("Start:", problem.getStartState())
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
+    "*** YOUR CODE HERE ***"
+    startingNode = problem.getStartState()
+    if problem.isGoalState(startingNode):
+        return []
 
-    node = Node(problem.GetStartState())
-    frontier = util.Stack()
-    frontier.push(node)
-    reached = {problem.getStartState(): node}
-    actions = []
+    queue = util.Stack()
+    visitedNodes = []
+    queue.push((startingNode,[]))
 
-    while not frontier.isEmpty():
-        node = frontier.pop()
-        if problem.isGoalState(node.state):
-            actions = path_actions(node)
-        for child in expand(problem, node):
-            s = child.state
-            if s not in reached:
-                reached[s] = child
-                frontier.push(child)
-    return actions
-    
+    while not queue.isEmpty():
+        currentNode, actions = queue.pop()
+        if currentNode not in visitedNodes:
+            visitedNodes.append(currentNode)
+            if problem.isGoalState(currentNode):
+                return actions
+            for nextNode, action, cost in problem.getSuccessors(currentNode):
+                nextAction = actions + [action]
+                queue.push((nextNode, nextAction))
+
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
+    "*** YOUR CODE HERE ***"
+    startingNode = problem.getStartState()
+    if problem.isGoalState(startingNode):
+        return []
+        
+    queue = util.Queue()
+    visitedNodes = []
+    queue.push((startingNode, []))
 
-    node = Node(problem.GetStartState())
-    frontier = util.Queue()
-    frontier.push(node)
-    reached = {problem.getStartState(): node}
-    actions = []
+    while not queue.isEmpty():
+        currentNode, actions = queue.pop()
+        if currentNode not in visitedNodes:
+            visitedNodes.append(currentNode)
+            if problem.isGoalState(currentNode):
+                return actions
+            for nextNode, action, cost in problem.getSuccessors(currentNode):
+                nextAction = actions + [action]
+                queue.push((nextNode, nextAction))
 
-    while not frontier.isEmpty():
-        node = frontier.pop()
-        if problem.isGoalState(node.state):
-            actions = path_actions(node)
-        for child in expand(problem, node):
-            s = child.state
-            if s not in reached:
-                reached[s] = child
-                frontier.push(child)
-    return actions
+    util.raiseNotDefined()
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
